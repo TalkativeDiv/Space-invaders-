@@ -12,7 +12,7 @@ layer(['obj', 'ui'], 'obj')
 addLevel([
     '!^^^^^^^^^^^^^   &',
     '!^^^^^^^^^^^^^   &',
-    '!^^^^^^^^^^^^^   &',
+    '!^^^^^^^^^^^^^^  &',
     '!                &',
     '!                &',
     '!                &',
@@ -41,7 +41,7 @@ const score = add([
     text('0'),
     pos(50, 50),
     layer('ui'),
-    scale(3),
+    scale(2),
     {
         value: 0,
     }
@@ -89,11 +89,20 @@ function spawnBullet(p) {
 
 
 keyPress('space', () => {
-    spawnBullet(player.pos.add(0, -25))
+spawnBullet(player.pos.add(0, -25))
 })
-action('bullet', (b) =>{
-    b.move(0, -BULLET_SPEED)
-    if(b.pos.y < 0 )destroy()
+action('bullet', (b) => {
+  b.move(0, -BULLET_SPEED)
+  if (b.pos.y < 0) {
+    destroy(b)
+  }
+})
+collides('bullet', 'space-invader', (b,s) =>{
+    camShake(4)
+    destroy(b)
+    destroy(s)
+    score.value++
+    score.text = score.value    
 })
 
 /* enemys*/
@@ -123,4 +132,10 @@ action('space-invader', (s) => {
     if (s.pos.y >= height() / 2) {
         go('lose', { score: score.value })
     }
+})
+
+score.action(() => {
+ if(score.value === 40){
+     go('win');
+ }
 })

@@ -31,7 +31,7 @@
   <script>
 
 kaboom({
-  ...{"fullscreen":true,"width":240,"height":240,"scale":1,"startScene":"main","version":"0.5.0"},
+  ...{"fullscreen":true,"width":240,"height":240,"scale":1,"startScene":"main","version":"0.5.0","clearColor":[0,0,0,1]},
   global: true,
   plugins: [ peditPlugin, asepritePlugin, kbmspritePlugin ],
 });
@@ -61,7 +61,7 @@ layer(['obj', 'ui'], 'obj')
 addLevel([
     '!^^^^^^^^^^^^^   &',
     '!^^^^^^^^^^^^^   &',
-    '!^^^^^^^^^^^^^   &',
+    '!^^^^^^^^^^^^^^  &',
     '!                &',
     '!                &',
     '!                &',
@@ -90,7 +90,7 @@ const score = add([
     text('0'),
     pos(50, 50),
     layer('ui'),
-    scale(3),
+    scale(2),
     {
         value: 0,
     }
@@ -138,10 +138,20 @@ function spawnBullet(p) {
 
 
 keyPress('space', () => {
-    spawnBullet(player.pos.add(0, -25))
+spawnBullet(player.pos.add(0, -25))
 })
-action('bullet', (b) =>{
-    b.move(0, -BULLET_SPEED)
+action('bullet', (b) => {
+  b.move(0, -BULLET_SPEED)
+  if (b.pos.y < 0) {
+    destroy(b)
+  }
+})
+collides('bullet', 'space-invader', (b,s) =>{
+    camShake(4)
+    destroy(b)
+    destroy(s)
+    score.value++
+    score.text = score.value    
 })
 
 /* enemys*/
@@ -173,6 +183,19 @@ action('space-invader', (s) => {
     }
 })
 
+score.action(() => {
+ if(score.value === 40){
+     go('win');
+ }
+})
+});
+scene("win", (args = {}) => {
+add([
+  text('YOU WIN'),
+  origin('center'),
+  scale(7),
+  pos(width()/2, height()/2)
+])
 });
 start("main");
 
