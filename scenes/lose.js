@@ -1,4 +1,4 @@
-add([
+add([  
   text(args.score),
   origin('center'),
   scale(10),
